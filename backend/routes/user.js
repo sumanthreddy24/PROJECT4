@@ -49,7 +49,7 @@ router.get("/getSearchHistory", authUser, getSearchHistory);
 router.put("/removeFromSearch", authUser, removeFromSearch);
 router.get("/getFriendsPageInfos", authUser, getFriendsPageInfos);
 
-router.get("/", authUser, getFriendsPageInfos);
+// router.get("/", authUser, getFriendsPageInfos);
 
 
 
