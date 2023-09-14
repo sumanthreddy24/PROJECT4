@@ -21,12 +21,15 @@ export default function Friends() {
   const getData = async () => {
     dispatch({ type: "FRIENDS_REQUEST" });
     const data = await getFriendsPageInfos(user.token);
+    // console.log(data)
     if (data.status === "ok") {
       dispatch({ type: "FRIENDS_SUCCESS", payload: data.data });
     } else {
       dispatch({ type: "FRIENDS_ERROR", payload: data.data });
     }
   };
+  console.log(data)
+
 
   return (
     <>
@@ -82,7 +85,12 @@ export default function Friends() {
                 <i className="right_icon"></i>
               </div>
             </Link>
-            <div className="mmenu_item hover3">
+            <Link
+              to="/friends/allUsers"
+              className={`mmenu_item hover3 ${
+                type === "allUsers" && "active_friends"
+              }`}
+            >
               <div className="small_circle">
                 <i className="friends_suggestions_icon"></i>
               </div>
@@ -90,11 +98,11 @@ export default function Friends() {
               <div className="rArrow">
                 <i className="right_icon"></i>
               </div>
-            </div>
+            </Link>
             <Link
-              to="/friends/all"
+              to="/friends/allFriends"
               className={`mmenu_item hover3 ${
-                type === "all" && "active_friends"
+                type === "allFriends" && "active_friends"
               }`}
             >
               <div className="small_circle">
@@ -172,12 +180,12 @@ export default function Friends() {
               </div>
             </div>
           )}
-          {(type === undefined || type === "all") && (
+          {(type === undefined || type === "allFriends") && (
             <div className="friends_right_wrap">
               <div className="friends_left_header">
                 <h3>Friends</h3>
                 {type === undefined && (
-                  <Link to="/friends/all" className="see_link hover3">
+                  <Link to="/friends/allFriends" className="see_link hover3">
                     See all
                   </Link>
                 )}
@@ -188,7 +196,30 @@ export default function Friends() {
                     <Card
                       userr={user}
                       key={user._id}
-                      type="friends"
+                      type="allFriends"
+                      getData={getData}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+            {(type === undefined || type === "allUsers") && (
+            <div className="friends_right_wrap">
+              <div className="friends_left_header">
+                <h3>Suggestions</h3>
+                {type === undefined && (
+                  <Link to="/friends/allUsers" className="see_link hover3">
+                    See all
+                  </Link>
+                )}
+              </div>
+              <div className="flex_wrap">
+                {data.allUsers &&
+                  data.allUsers.map((user) => (
+                    <Card
+                      userr={user}
+                      key={user._id}
+                      type="allUsers"
                       getData={getData}
                     />
                   ))}

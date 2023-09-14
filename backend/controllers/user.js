@@ -670,23 +670,57 @@ exports.changepassword = async (req, res) => {
     }
   };
   
+  // exports.getFriendsPageInfos = async (req, res) => {
+  //   try {
+  //     const current_user = await User.findById(req.user.id)
+  //       .select("friends requests")
+  //       .populate("friends", "first_name last_name picture username")
+  //       .populate("requests", "first_name last_name picture username");
+  //     const sentRequests = await User.find({
+  //       requests: new mongoose.Types.ObjectId(req.user.id),
+  //     }).select("first_name last_name picture username");
+  //     const allUsers = await User.find().populate("_id")
+  //     .sort({ createdAt: -1 });
+  //     res.status(200).json({
+  //       friends: current_user.friends,
+  //       requests: current_user.requests,
+  //       sentRequests,
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // };
   exports.getFriendsPageInfos = async (req, res) => {
     try {
-      const user = await User.findById(req.user.id)
+      const current_user = await User.findById(req.user.id)
         .select("friends requests")
         .populate("friends", "first_name last_name picture username")
         .populate("requests", "first_name last_name picture username");
+  
       const sentRequests = await User.find({
-        requests: mongoose.Types.ObjectId(req.user.id),
+        requests: req.user.id,
       }).select("first_name last_name picture username");
-      res.json({
-        friends: user.friends,
-        requests: user.requests,
+  
+      const allUsers = await User.find()
+        .select("first_name last_name picture username")
+        .sort({ createdAt: -1 });
+  
+      // Remove users who are friends, have received requests, have sent requests to the current user, or are the current user
+      const updatedAllUsers = allUsers.filter((user) => {
+        const isFriend = current_user.friends.some((friend) => friend._id.equals(user._id));
+        const hasReceivedRequest = sentRequests.some((sentUser) => sentUser._id.equals(user._id));
+        const hasSentRequest = current_user.requests.some((requestUser) => requestUser._id.equals(user._id));
+        return !isFriend && !hasReceivedRequest && !hasSentRequest && !user._id.equals(req.user.id);
+      });
+  
+      res.status(200).json({
+        friends: current_user.friends,
+        requests: current_user.requests,
         sentRequests,
+        allUsers: updatedAllUsers,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   };
   
-

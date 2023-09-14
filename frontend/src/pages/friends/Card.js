@@ -4,25 +4,32 @@ import {
   acceptRequest,
   cancelRequest,
   deleteRequest,
+  addFriend,
 } from "../../functions/user";
 
 export default function Card({ userr, type, getData }) {
   const { user } = useSelector((state) => ({ ...state }));
   const cancelRequestHandler = async (userId) => {
     const res = await cancelRequest(userId, user.token);
-    if (res == "ok") {
+    if (res === "ok") {
       getData();
     }
   };
   const confirmHandler = async (userId) => {
     const res = await acceptRequest(userId, user.token);
-    if (res == "ok") {
+    if (res === "ok") {
       getData();
     }
   };
   const deleteHandler = async (userId) => {
     const res = await deleteRequest(userId, user.token);
-    if (res == "ok") {
+    if (res === "ok") {
+      getData();
+    }
+  };
+  const addFriendHandler = async (userId) => {
+    const res = await addFriend(userId, user.token);
+    if (res === "ok") {
       getData();
     }
   };
@@ -53,7 +60,17 @@ export default function Card({ userr, type, getData }) {
             Delete
           </button>
         </>
-      ) : (
+      ) : type === "allUsers" ? (
+        <>
+          <button
+            className="blue_btn"
+            onClick={() => addFriendHandler(userr._id)}
+          >
+            Add Friend
+          </button>
+        </>
+        
+      ):(
         ""
       )}
     </div>
